@@ -1,0 +1,7 @@
+{
+	"name":"扫雷",
+	"icon":"icon.svg",
+	"width":320,
+	"height":380,
+	"only":true
+}

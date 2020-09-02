@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<title>计算器</title>
+	<style>
+		html,body{
+			margin:0;
+			width:100%;
+			height:100%;
+			overflow:hidden;
+		}
+		.caleBox{
+			width:300px;
+			height:410px;
+			background:#ccf;
+			margin:10px;
+			box-shadow:0px 4px 6px 2px #66f;
+			border-radius:4px;
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none; 
+		}
+		.caleBox .header{
+			width:100%;
+			height:110px;
+		}
+		.caleBox .header #input{
+			display:inline-block;
+			width:280px;
+			height:100px;
+			background:#99f;
+			color:#fff;
+			margin:10px 10px 0px 10px;
+			border-radius:6px;
+			text-align: right;
+			line-height: 80px;
+			padding:10px;
+			box-sizing:border-box;
+			font-size:20pt;
+			font-weight:600;
+			overflow: hidden;
+		}
+		.caleBox .bodyer{
+			width:100%;
+			height:300px;
+			display:grid;
+			grid-gap:12px;
+			grid-template-columns:repeat(4,4fr);
+			padding:12px;
+			box-sizing:border-box;
+		}
+		.caleBox .bodyer .key{
+			background:#99f;
+			border-radius:6px;
+			text-align:center;
+			line-height: 60px;
+			font-size:20pt;
+			font-weight:600;
+			color:#33c;
+			box-shadow:0px 4px 2px #66f;
+			transition:all .1s;
+		}
+		.caleBox .bodyer .key:hover{
+			box-shadow:0px 0px 0px #66f;	
+		}
+
+		.red.caleBox{
+			background:#fcc;
+			box-shadow:0px 4px 6px 2px #f66;
+		}
+		.red.caleBox .header #input{
+			background:#f99;
+			color:#fff;
+		}
+		.red.caleBox .bodyer .key{
+			background:#f99;
+			color:#c33;
+			box-shadow:0px 4px 2px #f66;
+		}
+		.red.caleBox .bodyer .key:hover{
+			box-shadow:0px 0px 0px #f66;	
+		}
+
+		.blue.caleBox{
+			background:#ccf;
+			box-shadow:0px 4px 6px 2px #66f;
+		}
+		.blue.caleBox .header #input{
+			background:#99f;
+			color:#fff;
+		}
+		.blue.caleBox .bodyer .key{
+			background:#99f;
+			color:#33c;
+			box-shadow:0px 4px 2px #66f;
+		}
+		.blue.caleBox .bodyer .key:hover{
+			box-shadow:0px 0px 0px #66f;	
+		}
+
+		.green.caleBox{
+			background:#cfc;
+			box-shadow:0px 4px 6px 2px #6f6;
+		}
+		.green.caleBox .header #input{
+			background:#9f9;
+			color:#fff;
+		}
+		.green.caleBox .bodyer .key{
+			background:#9f9;
+			color:#3c3;
+			box-shadow:0px 4px 2px #6f6;
+		}
+		.green.caleBox .bodyer .key:hover{
+			box-shadow:0px 0px 0px #6f6;	
+		}
+	</style>
+</head>
+<body>
+	<div class="caleBox blue">
+		<div class="header">
+			<div id="input"></div>
+		</div>
+		<div class="bodyer">
+			<div class="key" onclick="num(7)">7</div>
+			<div class="key" onclick="num(8)">8</div>
+			<div class="key" onclick="num(9)">9</div>
+			<div class="key" onclick="key(this)">＋</div>
+			<div class="key" onclick="num(4)">4</div>
+			<div class="key" onclick="num(5)">5</div>
+			<div class="key" onclick="num(6)">6</div>
+			<div class="key" onclick="key(this)">－</div>
+			<div class="key" onclick="num(1)">1</div>
+			<div class="key" onclick="num(2)">2</div>
+			<div class="key" onclick="num(3)">3</div>
+			<div class="key" onclick="key(this)">×</div>
+			<div class="key" onclick="clearInput()">C</div>
+			<div class="key" onclick="num(0)">0</div>
+			<div class="key" onclick="result()">＝</div>
+			<div class="key" onclick="key(this)">÷</div>
+		</div>
+	</div>
+	<script>
+		var input = "";
+		var f = false;
+		var div = document.getElementById("input");
+		function num(a){
+			if(f){
+				input = "";
+				f = false;
+			}
+			input = input + a;
+			div.innerText = input;
+		}
+		function key(s){
+			if(f){
+				input = "";
+				f = false;
+			}
+			input = input + s.innerText;
+			div.innerText = input;
+		}
+		function result(){
+			input = input.replace("＋",'+');
+			input = input.replace("－",'-');
+			input = input.replace("×",'*');
+			input = input.replace("÷",'/');
+			input = eval(input) + "";
+			div.innerText = input;
+			f = true;
+		}
+		function clearInput(){
+			input = "";
+			div.innerText = input;
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<title>扫雷</title>
+	<style>
+		html,body{
+			margin:0;
+			height:100%;
+			height:100%;
+			overflow:hidden;
+		}
+		.box{
+			width:310px;
+			height:370px;
+			margin:5px;
+			border-radius:8px;
+			background:#9cf;
+			box-shadow:0px 2px 4px 1px #69f;
+		}
+		.box .header{
+			display:flex;
+			justify-content:center;
+			width:100%;
+			height:60px;
+		}
+		.box .header span{
+			display:block;
+			width:60px;
+			height:40px;
+			margin-top:15px;
+			color:#fff;
+			line-height:40px;
+			font-size:16pt;
+			border-radius:10px;
+			text-align:center;
+			background:#333;
+		}
+		.box .header button#start{
+			width:80px;
+			height:30px;
+			border:none;
+			outline:none;
+			line-height:30px;
+			color:#fff;
+			margin:20px 20px 0px;
+			border-radius:30px;
+			background:#69f;
+			cursor:pointer;
+		}
+		#game{
+			display:flex;
+			width:300px;
+			height:300px;
+			margin:5px;
+			background:#fff;
+			border-radius:4px;
+			overflow:hidden;
+			flex-wrap:wrap;
+		}
+		#game li{
+			position:relative;
+			display:block;
+			width:30px;
+			height:30px;
+			background:#fff;
+			text-align:center;
+			line-height:30px;
+			color:#999;
+			font-size:14pt;
+			font-weight:600;
+			user-select: none;
+		}
+		#game li.bomb{
+			font-size: 16pt;
+			color:#f66;
+		}
+		#game li.close::before{
+			content:"";
+			position:absolute;
+			top:0;
+			left:0;
+			width:100%;
+			height:100%;
+			background:linear-gradient(180deg,#8bf,#7af);
+			border-radius:2px;
+		}
+		#game li.tag::after{
+			content:"";
+			position:absolute;
+			top:5px;
+			left:5px;
+			width:20px;
+			height:20px;
+			box-sizing:border-box;;
+			border:5px solid #fff;
+			border-radius:20px;
+		}
+	</style>
+	<script src="../../js/jq.js"></script>
+</head>
+<body>
+	<div class="box">
+		<div class="header">
+			<span id="time">000</span>
+			<button id="start" onclick="Game.start()">开 始</button>
+			<span id="bomb">000</span>
+		</div>
+		<!-- <canvas id="game" width="300px" height="300px"></canvas> -->
+		<div id="game"></div>
+	</div>
+</body>
+<script>
+let Game = {
+	isPlay:true,
+	time:0,
+	bomb:10,
+	data:[],
+	index:-1,
+	onload:function(){
+		this.timeTag = document.getElementById("time");
+		this.bombTag = document.getElementById("bomb");
+		this.gameTag = document.getElementById("game");
+		this.starTag = document.getElementById("start");
+		for(let i = 0;i < 100;i++){
+			let div = document.createElement("li");
+			this.data[i] = div;
+			$(div).attr("index",i);
+			div.oncontextmenu = function(e){
+				e.preventDefault();
+				if(this.isPlay){
+					if($(e.target).hasClass("tag")){
+						$(e.target).removeClass("tag");
+						this.bomb++;
+					}else{
+						$(e.target).addClass("tag");
+						this.bomb--;
+					}
+				}
+			}.bind(this);
+			$(div).click(function(e){
+				this.open(Number($(e.target).attr("index")));
+			}.bind(this));
+			this.gameTag.appendChild(div);
+		}
+	},
+	start:function(){
+		this.time = 0;
+		this.startTime = Date.now();
+		this.bomb = 10;
+		this.starTag.innerText = "重玩";
+		this.isPlay = true;
+		this.Random();
+
+		this.time = (Date.now() - this.startTime) / 1000 | 0;
+		this.timeTag.innerText = (this.time/100|0)+""+(this.time/10|0)%10+""+this.time%10;
+		this.bombTag.innerText = (this.bomb/100|0)+""+(this.bomb/10|0)%10+""+this.bomb%10;
+
+		if(this.index != -1)this.end();
+		this.index = setInterval(function(){
+			if(this.isPlay){
+				this.time = (Date.now() - this.startTime) / 1000 | 0;
+				this.timeTag.innerText = (this.time/100|0)+""+(this.time/10|0)%10+""+this.time%10;
+				this.bombTag.innerText = (this.bomb/100|0)+""+(this.bomb/10|0)%10+""+this.bomb%10;
+			}
+			this.check();
+		}.bind(this),500);
+	},
+	Random:function(){
+		let bomb = this.bomb;
+		$(".bomb").text("").removeClass("bomb");
+		$("#game li").addClass("close").removeClass("tag").text("");
+		while(bomb > 0){
+			let i = Math.floor(Math.random() * 10);
+			let j = Math.floor(Math.random() * 10);
+			if($(this.data[i*10+j]).text() == ""){
+				$(this.data[i*10+j]).text("☢");
+				$(this.data[i*10+j]).addClass("bomb");
+				bomb--;
+				let index = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+				for(let k in index){
+					let x = index[k][0] + i;
+					let y = index[k][1] + j;
+					if(x >= 0 && x < 10 && y >= 0 && y < 10){
+						$(this.data[x*10+y]).text(Number($(this.data[x*10+y]).text())+1);
+					}
+				}
+			}
+		}
+	},
+	open:function(i){
+		this.area(i);
+	},
+	area:function(i){
+		if($(this.data[i]).hasClass("close") && this.isPlay){
+			if($(this.data[i]).hasClass("tag")){
+				$(this.data[i]).removeClass("tag");
+				this.bomb++;
+			}
+			$(this.data[i]).removeClass("close");
+			let t = $(this.data[i]).text();
+			if(t == "☢"){
+				this.isPlay = false;
+				console.log("游戏结束");
+				this.end();
+				return 0;
+			}else if(t == ""){
+				let x = (i / 10 | 0);
+				let y = (i % 10);
+				let index = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+				for(let k in index){
+					let m = index[k][0] + x;
+					let n = index[k][1] + y;
+					if(m >= 0 && m < 10 && n >= 0 && n < 10){
+						this.open(m*10+n);
+					}
+				}
+			}
+		}
+		return 0;
+	},
+	check:function(){
+		if($("#game li.bomb.tag").length == 10 && $("#game li.close").length == 10){
+			this.isPlay = false;
+			console.log("游戏胜利");
+			this.end();		}
+	},
+	end:function(){
+		clearInterval(this.index);
+		this.index = -1;
+	}
+};
+window.onload = function(){
+	Game.onload();
+}
+</script>
+</html>

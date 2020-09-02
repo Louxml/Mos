@@ -1,0 +1,7 @@
+{
+	"name":"2048",
+	"icon":"icon.svg",
+	"width":340,
+	"height":400,
+	"only":true
+}

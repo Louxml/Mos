@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<title>Chat</title>
+	<style>
+	html,body{
+		width:440px;
+		height:700px;
+		margin:0;
+		padding:0;
+	}
+	.container{
+		position:absolute;
+		width:100%;
+		height:100%;
+	}
+	.container.name .login{
+		position:absolute;
+		top:20px;
+		left:45px;
+		width:360px;
+		height:200px;
+		border-radius:8px;
+		background:#9c89b8;
+	}
+	.container.chat .login{
+		display:none;
+	}
+	.login img.userlogo{
+		display:block;
+		width:60px;
+		height:60px;
+		margin:30px auto;
+		border-radius:60px;
+		background:#fff;
+	}
+	.login input#username{
+		display:block;
+		width:240px;
+		height:40px;
+		line-height:40px;
+		border:none;
+		outline:none;
+		text-align:center;
+		font-size:12pt;
+		margin:10px auto;
+		border-radius:40px;
+		background:#f0e6ef;
+	}
+	.container #hint{
+		position:absolute;
+		transform:translate(-50%,-50%);
+		top:50%;
+		left:50%;
+		width:300px;
+		height:40px;
+		line-height:40px;
+		color:#fff;
+		font-size:12pt;
+		border-radius:4px;
+		text-align:center;
+		box-shadow:0px 0px 2px 0px #666;
+		background:#9c89b8;
+		opacity:0;
+	}
+	.container.chat .chatBox{
+		display:flex;
+		flex-direction:column;
+		width:100%;
+		height:100%;
+		overflow:hidden;
+		border-radius:10px;
+		background:#f0e6ef;
+	}
+	.container.name .chatBox{
+		display:none;
+	}
+	.chatBox .header{
+		width:100%;
+		height:60px;
+		text-align:center;
+		background:#9c89b8;
+	}
+	.chatBox .header #chatname{
+		display:block;
+		width:100px;
+		height:20px;
+		line-height:20px;
+		font-size:14pt;
+		font-weight:600;
+		margin:10px auto 0px;
+		color:#fff;
+	}
+	.chatBox .header #online{
+		display:block;
+		width:100px;
+		height:20px;
+		line-height:20px;
+		font-size:8pt;
+		margin:0px auto;
+		color:#fff;
+	}
+	.chatBox .bodyer{
+		flex:1;
+		width:100%;
+		overflow-y:auto;
+		overflow-x:hidden;
+	}
+	.chatBox .bodyer::-webkit-scrollbar {
+		/*滚动条整体样式*/
+		width : 10px;  /*高宽分别对应横竖滚动条的尺寸*/
+		height: 1px;
+	}
+	.chatBox .bodyer::-webkit-scrollbar-thumb {
+		/*滚动条里面小方块*/
+		border-radius: 10px;
+		box-shadow   : inset 0 0 5px rgba(0, 0, 0, 0.2);
+		background   : #9c89b8;
+	}
+	.chatBox .bodyer::-webkit-scrollbar-track {
+		/*滚动条里面轨道*/
+		box-shadow   : inset 0 0 5px rgba(0, 0, 0, 0.2);
+		border-radius: 10px;
+		background   : #ededed;
+	}
+	.chatBox .bodyer .msgitem{
+		display:flex;
+		width:100%;
+		margin:10px 0px;
+	}
+	.chatBox .bodyer .msgitem.left{
+		flex-direction:row;
+	}
+	.chatBox .bodyer .msgitem.right{
+		flex-direction:row-reverse;
+	}
+	.chatBox .bodyer .msgitem img.userhead{
+		width:46px;
+		height:46px;
+		margin:10px;
+		border-radius:40px;
+		background:#b8bedd;
+	}
+	.chatBox .bodyer .msgitem.left .msgbox{
+		flex:1;
+	}
+	.chatBox .bodyer .msgitem.right .msgbox{
+		flex:1;
+		text-align:right;
+	}
+	.chatBox .bodyer .msgitem.left .msgbox .username{
+		display:block;
+		margin:10px 0px 0px 10px;
+	}
+	.chatBox .bodyer .msgitem.right .msgbox .username{
+		display: block;
+		margin:10px 10px 0px 0px;
+	}
+	.chatBox .bodyer .msgitem .msgbox .msg{
+		display:inline-block;
+		max-width:260px;
+		min-height:20px;
+		font-size:12pt;
+		text-align:left;
+		line-height:20px;
+		padding:10px 12px;
+		word-wrap:break-word;
+		border-radius:20px;
+		background:#f0a6ca;
+	}
+	.chatBox .bodyer .msgitem.right .msgbox .msg{
+		color:#fff;
+		background:#9c89b8;
+	}
+	.chatBox .footer{
+		display:flex;
+		width:100%;
+		height:100px;
+		background:#b8bedd;
+	}
+	.chatBox .footer textarea{
+		width:290px;
+		height:60px;
+		line-height:20px;
+		border:none;
+		outline:none;
+		resize:none;
+		font-size:20px;
+		padding:10px;
+		overflow:hidden;
+		margin:10px 0px 10px 10px;
+		border-radius:4px;
+		background:#f0e6ef;
+	}
+	.chatBox .footer button.send{
+		width:100px;
+		height:40px;
+		margin:10px;
+		color:#fff;
+		line-height:40px;
+		font-size:12pt;
+		border:none;
+		outline:none;
+		border-radius:40px;
+		background:#9c89b8;
+	}
+	</style>
+	<script src="../../js/jq.js"></script>
+	<script src="socket.io.js"></script>
+</head>
+<body>
+	<div class="container name">
+		<div class="login">
+			<img class="userlogo" src="assets/user.svg">
+			<input type="text" id="username" autocomplete="off" placeholder="请输入你的昵称" maxlength="10">
+		</div>
+		<div class="chatBox">
+			<div class="header">
+				<span id="chatname">大厅</span>
+				<span id="online">在线 99 人</span>
+			</div>
+			<div class="bodyer">
+				
+			</div>
+			<div class="footer">
+				<textarea id="message"></textarea>
+				<button class="send" onclick="Chat.send()">发送</button>
+			</div>
+		</div>
+		<div id="hint">这是提示</div>
+	</div>
+</body>
+<script>
+let Chat = {
+	name:"",
+	num:0,
+	app:io("http://112.74.35.246:3000"),
+	onload:function(){
+		this.app.on('name',(data) => {
+			if(data.r){
+				this.name = data.data;
+				this.chat();
+			}else{
+				this.hint("该昵称已存在！");
+			}
+		});
+		this.app.on("message",(data) => {
+			let f = data.name == this.name?"right":"left";
+			let div = $("<div class='msgitem'><img class='userhead' src='assets/user.svg'><div class='msgbox'><div class='username'>"+data.name+"</div><div class='msg'>"+data.data+"</div></div></div>").addClass(f);
+			$(".chatBox .bodyer").append(div);
+			if(f == "right"){
+				let scrollHeight = $('.chatBox .bodyer').prop("scrollHeight");
+				$('.chatBox .bodyer').animate({scrollTop:scrollHeight}, 400);
+			}
+		});
+		this.app.on("online",(data) => {
+			console.log(data);
+			this.num = data;
+			$("#online").text("在线 "+this.num+" 人");
+		});
+
+
+		$("#username").focus().keydown(function(e){
+			if(e.keyCode == 13){
+				let name = $("#username").val();
+				if(name != ""){
+					this.join(name);
+				}else{
+					this.hint("昵称不能为空！");
+				}
+				
+			}
+		}.bind(this));
+		$("#message").keydown(function(e){
+			if(e.keyCode == 13 && (e.altKey || e.ctrlKey)){
+				this.send();
+			}
+		}.bind(this));
+	},
+	join:function(name){
+		this.app.emit("name",name);
+	},
+	chat:function(){
+		$(".container").removeClass("name").addClass("chat");
+		$("#message").val("").focus();
+	},
+	hint:function(text){
+		$("#hint").text(text).css("opacity",1).animate({
+			opacity:'0'
+		},2500);
+	},
+	send:function(){
+		let text = $("#message").val();
+		if(text != ""){
+			this.app.emit("message",text);
+		}else{
+			this.hint("消息不能为空！");
+		}
+		$("#message").val("").focus();
+	}
+}
+window.onload = function(){
+	Chat.onload();
+}
+
+</script>
+</html>

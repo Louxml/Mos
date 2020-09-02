@@ -1,0 +1,7 @@
+{
+	"name":"Chat",
+	"icon":"icon.svg",
+	"width":440,
+	"height":700,
+	"only":true
+}
