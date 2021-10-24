@@ -1,0 +1,26 @@
+{
+  "name": "mos",
+  "version": "1.0.0",
+  "description": "mos",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Louxml/Mos.git"
+  },
+  "keywords": [
+    "mos"
+  ],
+  "author": "Louxml",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Louxml/Mos/issues"
+  },
+  "homepage": "https://github.com/Louxml/Mos#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^4.3.1"
+  }
+}
