@@ -29,26 +29,27 @@ app.post("/appList", function(req, res){
             let confPath = pathName + "/" + f + "/config.json";
             let appPath = pathName + "/" + f + "/index.html"
             if(fs.existsSync(appPath)){
-                if(fs.existsSync(confPath)){
-                    let config = JSON.parse(fs.readFileSync(confPath).toString())
-                    result.push({
-                        name: config["name"],
-                        icon: "./public/app/" + f + "/" + config["icon"],
-                        app: "./public/app/" + f + "/index.html",
-                        width: config["width"],
-                        height: config["height"],
-                        only: config["only"]
-                    })
-                }else{
-                    result.push({
-                        name: "应用",
-                        icon: "./public/app/src/app.svg",
-                        app: "./public/" + f + "/index.html",
-                        width :500,
-                        height: 500,
-                        only: true
-                    })
+                let config = {}
+                let defConfig = {
+                    name: "应用",
+                    icon: "./public/src/app.svg",
+                    app: "./public/" + f + "/index.html",
+                    width :500,
+                    height: 500,
+                    only: true
                 }
+                if(fs.existsSync(confPath)){
+                    let conf = JSON.parse(fs.readFileSync(confPath).toString())
+                    config = {
+                        name: conf.name || defConfig.name,
+                        icon: conf.icon ? "./public/app/" + f + "/" + conf["icon"] : defConfig.icon,
+                        app: "./public/app/" + f + "/index.html",
+                        width: conf.width || defConfig.width,
+                        height: conf.height || defConfig.height,
+                        only: conf.only != null ? conf.only : defConfig.only
+                    }
+                }
+                result.push(config)
             }
         }
         res.send(JSON.stringify(result))

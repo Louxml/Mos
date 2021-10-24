@@ -1,6 +1,6 @@
 # Mos
 ### Demo
-[Demo](http://112.74.35.246/demo7)
+[Demo](http://mos.amazing-w.top)
 ### 小游戏
 小游戏都是通过HTML节点进行渲染
 ### 日志
