@@ -5,8 +5,201 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Piano</title>
+    <style>
+        html,body{
+            width:100%;
+            height:100%;
+            margin:0;
+            padding:0;
+            overflow:hidden;
+        }
+        .container{
+            width:100%;
+            height:100%;
+            padding:10px;
+            box-sizing:border-box;
+            border-radius:10px;
+            background:#e0f1f2;
+            user-select: none;
+        }
+        .container > .keyboard{
+            display:grid;
+            width:620px;
+            height:260px;
+            margin:100px auto 0px;
+            grid-gap: 10px;
+            grid-auto-flow: row;
+            grid-template-columns: repeat(7, 80px);
+            grid-template-rows: repeat(3, 80px);
+        }
+        .container > .keyboard > .key{
+            position:relative;
+        }
+        .container > .keyboard > .key > .text{
+            position:relative;
+            width:64px;
+            height:64px;
+            margin:8px;
+            border-radius:32px;
+            background:#b6dfdb;
+
+            text-align:center;
+            line-height:66px;
+            font-size:20pt;
+            color:#fff;
+            cursor:pointer;
+            transition:all 0.1s;
+        }
+        .container > .keyboard > .key > .anim{
+            position:absolute;
+            width:0;
+            height:0;
+            top:50%;
+            left:50%;
+        }
+        .container > .keyboard > .key > .anim > span{
+            position:absolute;
+            transform:translate(-50%, -50%);
+            width:64px;
+            height:64px;
+            border-radius:32px;
+            background:#4db6ac;
+            box-shadow: 0 0 4px 4px #4db6ac;
+            animation-name:ripping;
+        }
+        .container > .keyboard > .key > .text.press{
+            background:#80cbc4;
+            transform: scale(0.9);
+        }
+        @keyframes ripping{
+            0% {transform:translate(-50%, -50%) scale(1); opacity: 1;}
+            100%{transform:translate(-50%, -50%) scale(2); opacity: 0;}
+        }
+    </style>
+    <script src="../../js/jq.js"></script>
 </head>
 <body>
-    123
+    <div class="container">
+        <div class="keyboard">
+            
+        </div>
+    </div>
 </body>
+<script>
+let Piano = {
+    config:{
+        isNote:false,
+        animTime:1000 //ms
+    },
+    label:["do", "re", "mi", "fa","so", "la", "si"],
+    key:{
+        81:0,
+        87:1,
+        69:2,
+        82:3,
+        84:4,
+        89:5,
+        85:6,
+        65:7,
+        83:8,
+        68:9,
+        70:10,
+        71:11,
+        72:12,
+        74:13,
+        90:14,
+        88:15,
+        67:16,
+        86:17,
+        66:18,
+        78:19,
+        77:20
+    },
+    anim:[],
+    onload:function(e){
+        this.initKey()
+        this.timeUpdate()
+    },
+    
+    initKey(){
+        let that = this;
+        for(let i = 0;i < 3 * 7;i++){
+            $(".keyboard").append($(`
+                <div class="key">
+                    <div class="anim"></div>
+                    <div class="text">${that.config.isNote?that.label[i%7]:i%7+1}</div>
+                </div>
+            ` ))
+        }
+
+        $(".keyboard > .key > .text").on("mousedown", function(e){
+            let i = $(".keyboard .key > .text").index(e.currentTarget);
+            that.keyDown(i);
+            that.note(i);
+        })
+        $(".keyboard > .key > .text").on("mouseup", function(e){
+            let i = $(".keyboard .key > .text").index(e.currentTarget);
+            that.keyUp(i);
+        })
+        $(".keyboard > .key > .text").on("mouseout", function(e){
+            let i = $(".keyboard .key > .text").index(e.currentTarget);
+            that.keyUp(i);
+        })
+        let onKey = []
+        window.onkeydown = function(e){
+            if(onKey.includes(e.keyCode) || e.keyCode < 65 || e.keyCode > 90)return;
+            onKey.push(e.keyCode)
+            that.keyDown(that.key[e.keyCode])
+        }
+
+        window.onkeyup = function(e){
+            let i = onKey.indexOf(e.keyCode)
+            if(i == -1 || e.keyCode < 65 || e.keyCode > 90){
+                return;
+            }
+            that.keyUp(that.key[e.keyCode])
+            onKey.splice(i, 1)
+        }
+    },
+
+
+    timeUpdate(dt){
+        let time = Date.now()
+        setInterval(() => {
+            let t = Date.now()
+            let dt = t - time
+            time = t
+            for(let i = 0;i < this.anim.length;i++){
+                if((this.anim[i][1] -= dt) <= 0){
+                    this.anim[i][0].remove()
+                    this.anim.splice(i--, 1)
+                }
+            }
+        }, 10);
+    },
+
+    keyDown(i){
+        let div = $(".keyboard .key > .text").eq(i);
+        let span = $("<span></span>")
+        span.css("animationDuration", `${this.config.animTime/1000}s`);
+        div.prev().append(span);
+        this.anim.push([span, this.config.animTime]);
+        div.addClass("press");
+    },
+
+    keyUp(i){
+        let div = $(".keyboard .key > .text").eq(i);
+        div.removeClass("press");
+    },
+
+    // 音符
+    note(i){
+        
+    }
+}
+
+window.onload = function(){
+    Piano.onload()
+}
+</script>
 </html>

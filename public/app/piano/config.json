@@ -1,7 +1,7 @@
 {
 	"name":"Piano",
 	"icon":null,
-	"width":400,
-	"height":400,
+	"width":800,
+	"height":500,
 	"only":true
 }
