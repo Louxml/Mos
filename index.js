@@ -1,8 +1,6 @@
 let express = require("express")
 let app = express()
-let path = require("path")
 let fs = require("fs");
-const { config } = require("process");
 var http = require('http').createServer(app);
 
 app.use(express.json())
