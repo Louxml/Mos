@@ -4,7 +4,7 @@
         height:min_state?0:height + 'px',
         top:y + 'px',
         left:x + 'px'
-    }" @mousedown="activeBox">
+    }" @mousedown.capture="activeBox">
         <div class="header">
             <div class="left" @click="minBox"></div>
             <div class="right" @click="closeBox"></div>
@@ -93,7 +93,8 @@ export default {
     overflow: visible;
     pointer-events: auto;
     background: #fff0;
-    transition: height .2s;
+    transition-property: height;
+    transition-duration: 1s;
     opacity:0.5;
 }
 .Box.active{
