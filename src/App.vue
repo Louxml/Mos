@@ -4,6 +4,10 @@
 </template>
 
 <script>
+// 数据
+import MosDataMgr from "./data/MosDataMgr"
+
+// 系统组件
 import Background from "./components/Background/Background.vue"
 import Desktop from "./components/Desktop/Desktop.vue"
 
@@ -12,6 +16,9 @@ export default {
 	components: {
 		Background,
 		Desktop,
+	},
+	created(){
+		MosDataMgr.init()
 	}
 }
 </script>

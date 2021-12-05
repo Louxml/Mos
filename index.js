@@ -5,21 +5,21 @@ var http = require('http').createServer(app);
 
 app.use(express.json())
 app.use('/public',express.static('public'));
-// app.all("*", function(req, res, next){
-//     res.header("Access-Control-Allow-Origin","*");    //允许的header类型
-//     res.header("Access-Control-Allow-Headers","content-type");    //跨域允许的请求方式 
-//     res.header("Access-Control-Allow-Methods","DELETE,PUT,POST,GET,OPTIONS");
-//     if (req.method.toLowerCase() == 'options')
-//         res.sendStatus(200);  //让options尝试请求快速结束
-//     else
-//         next();
-// })
+app.all("*", function(req, res, next){
+    res.header("Access-Control-Allow-Origin","*");    //允许的header类型
+    res.header("Access-Control-Allow-Headers","content-type");    //跨域允许的请求方式 
+    res.header("Access-Control-Allow-Methods","DELETE,PUT,POST,GET,OPTIONS");
+    if (req.method.toLowerCase() == 'options')
+        res.sendStatus(200);  //让options尝试请求快速结束
+    else
+        next();
+})
 
 app.get("/", function(req, res){
     res.sendFile(__dirname + "/index.html");
 })
 
-app.post("/appList", function(req, res){
+app.post("/getAppList", function(req, res){
     let pathName = "./public/app"
     let result = []
     fs.readdir(pathName, function(err, files){
@@ -30,8 +30,9 @@ app.post("/appList", function(req, res){
                 let config = {}
                 let defConfig = {
                     name: "应用",
-                    icon: "./public/src/app.svg",
-                    app: "./public/" + f + "/index.html",
+                    icon: null,
+                    app:f,
+                    enter: "index.html",
                     width :500,
                     height: 500,
                     only: true
@@ -40,8 +41,9 @@ app.post("/appList", function(req, res){
                     let conf = JSON.parse(fs.readFileSync(confPath).toString())
                     config = {
                         name: conf.name || defConfig.name,
-                        icon: conf.icon ? "./public/app/" + f + "/" + conf["icon"] : defConfig.icon,
-                        app: "./public/app/" + f + "/index.html",
+                        icon: conf.icon ? conf["icon"] : defConfig.icon,
+                        app:f,
+                        enter: "index.html",
                         width: conf.width || defConfig.width,
                         height: conf.height || defConfig.height,
                         only: conf.only != null ? conf.only : defConfig.only
